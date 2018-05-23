@@ -5,16 +5,24 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class LevelScripts : MonoBehaviour {
-    public Button submitButton;
+    
     public Text levelText;
     public GameObject accessDeniedText;
     public InputField passwordInput;
     public string password;
+    public string levelNumberText;
+    public string levelNext;
+    public Button nextHintButton;
+    public List<GameObject> hints;
+
+    private int hintIndex = 0;
 
 
     // Use this for initialization
     void Start() {
-
+        hints[hintIndex].SetActive(true);
+        if (hints.Count > 1) nextHintButton.gameObject.SetActive(true);
+        
     }
 
     // Update is called once per frame
@@ -26,7 +34,7 @@ public class LevelScripts : MonoBehaviour {
         }
         else
         {
-            levelText.text = "1";
+            levelText.text = levelNumberText;
         }
 
         if (Input.GetKeyDown(KeyCode.Return))
@@ -34,12 +42,13 @@ public class LevelScripts : MonoBehaviour {
             CheckPassword();
         }
         
+
     }
 
     public void CheckPassword(){
         if (passwordInput.text==password)
         {
-            SceneManager.LoadScene("Level2");
+            SceneManager.LoadScene(levelNext);
         }
         else
         {
@@ -48,22 +57,22 @@ public class LevelScripts : MonoBehaviour {
     }
 
 
-    public void ScaleUp()
+    public void NextHint()
     {
-        Vector3 scaleNow = submitButton.transform.localScale;
-        scaleNow.x *= 1.5f;
-        scaleNow.y *= 1.5f;
-        //Debug.Log("ptr enter");
-        submitButton.transform.localScale = scaleNow;
-    }
+        hintIndex = (hintIndex + 1) % hints.Count;
 
-    public void ScaleDown()
-    {
-        Vector3 scaleNow = submitButton.transform.localScale;
-        scaleNow.x /= 1.5f;
-        scaleNow.y /= 1.5f;
-        //Debug.Log("ptr enter");
-        submitButton.transform.localScale = scaleNow;
+        for(int i=0; i< hints.Count; i++)
+        {
+            hints[i].SetActive(i == hintIndex);
+        }
+
+        if (hintIndex == hints.Count - 1 || hintIndex == 0)
+        {
+            Vector3 scaleNow = nextHintButton.transform.localScale;
+            scaleNow.x *= -1f;
+            nextHintButton.transform.localScale = scaleNow;
+        }
+
     }
 
 
